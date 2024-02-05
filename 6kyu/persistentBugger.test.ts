@@ -27,16 +27,6 @@ export function persistence(num: number): number {
   return deep;
 }
 
-describe.skip("Persistent Bugger.", () => {
-  it("Fixed tests", () => {
-    assert.strictEqual(persistence(39), 3);
-    assert.strictEqual(persistence(4), 0);
-    assert.strictEqual(persistence(25), 2);
-    assert.strictEqual(persistence(999), 4);
-  });
-});
-
-
 // Another clever solution by codewars member
 // export function persistence(num: number): number {
 //   let count = 0
@@ -46,3 +36,33 @@ describe.skip("Persistent Bugger.", () => {
 //   }
 //   return count;
 // }
+//
+describe("Persistent Bugger.", () => {
+  it("Fixed tests", () => {
+    assert.strictEqual(persistence(39),3);
+    assert.strictEqual(persistence(4),0);
+    assert.strictEqual(persistence(25),2);
+    assert.strictEqual(persistence(999),4);
+  });
+
+  it('Random tests', () => {
+    
+    function sol(num: number) {
+       let c: number = num > 9 ? 1 : 0;
+       while ((num = (num + '').split('').reduce((mul, cv) => mul * +cv, 1)) > 9)
+            ++c;
+        return c;
+    }
+    
+    function rand(min: number, max: number): number  { 
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+    
+    for(let i: number = 0; i < 100; i++){
+        let n: number = rand(1, 10000000);
+        assert.strictEqual(persistence(n), sol(n), `Testing for num = ${n}`);
+    }
+  })
+});
+
+

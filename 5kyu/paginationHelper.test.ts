@@ -41,10 +41,10 @@ export class PaginationHelper {
 	}
 }
 
-describe.skip("Tests suite", () => {
+describe("Tests suite", () => {
   it("sample test : 24 items with 10 per page", () => {
     const collection = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 16, 17, 18, 19, 20, 21,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
       22, 23, 24,
     ]
     const helper = new PaginationHelper(collection, 10)
@@ -56,13 +56,13 @@ describe.skip("Tests suite", () => {
     assert.strictEqual(helper.pageItemCount(2), 4, "pageItemCount(2)")
     assert.strictEqual(helper.pageItemCount(3), -1, "pageItemCount(3)")
 
-    assert.strictEqual(helper.pageIndex(40), -1, "pageIndex(40)")
-    assert.strictEqual(helper.pageIndex(22), 2, "pageIndex(22)")
-    assert.strictEqual(helper.pageIndex(3), 0, "pageIndex(3)")
-    assert.strictEqual(helper.pageIndex(0), 0, "pageIndex(0)")
-    assert.strictEqual(helper.pageIndex(-1), -1, "pageIndex(-1)")
-    assert.strictEqual(helper.pageIndex(-23), -1, "pageIndex(-23)")
-    assert.strictEqual(helper.pageIndex(-15), -1, "pageIndex(-15)")
+    assert.strictEqual(helper.pageIndex(40), -1, "pageItemCount(40)")
+    assert.strictEqual(helper.pageIndex(22), 2, "pageItemCount(22)")
+    assert.strictEqual(helper.pageIndex(3), 0, "pageItemCount(3)")
+    assert.strictEqual(helper.pageIndex(0), 0, "pageItemCount(0)")
+    assert.strictEqual(helper.pageIndex(-1), -1, "pageItemCount(-1)")
+    assert.strictEqual(helper.pageIndex(-23), -1, "pageItemCount(-23)")
+    assert.strictEqual(helper.pageIndex(-15), -1, "pageItemCount(-15)")
   })
 
   it("empty collection", () => {
@@ -73,5 +73,54 @@ describe.skip("Tests suite", () => {
     assert.strictEqual(helper.pageIndex(0), -1, "pageIndex(0)")
     assert.strictEqual(helper.pageItemCount(0), -1, "pageItemCount(0)")
   })
-})
 
+  function randInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  describe("random tests", () => {
+    for (let i = 0; i < 100; i++) {
+      const itemCount = randInt(0, 100)
+      const itemsPerPage = randInt(1, itemCount * 2)
+      const pagesCount = Math.ceil(itemCount / itemsPerPage)
+
+      const helper = new PaginationHelper(Array(itemCount), itemsPerPage)
+
+      it(`for itemCount = ${itemCount} itemsPerPage = ${itemsPerPage}`, function () {
+        assert.strictEqual(helper.pageCount(), pagesCount, "pageCount")
+        assert.strictEqual(helper.itemCount(), itemCount, "itemCount")
+
+        for (let i = 0; i < 5; i++) {
+          const pageIndex = randInt(-2, pagesCount + 3)
+
+          let pageItemCount
+          if (pageIndex < 0 || pageIndex >= pagesCount) pageItemCount = -1
+          else if (pageIndex === pagesCount - 1)
+            // last page
+            pageItemCount = itemCount % itemsPerPage || itemsPerPage
+          else pageItemCount = itemsPerPage
+
+          assert.strictEqual(
+            helper.pageItemCount(pageIndex),
+            pageItemCount,
+            "pageItemCount",
+          )
+        }
+
+        for (let i = 0; i < 5; i++) {
+          const itemIndex = randInt(-2, itemCount + 5)
+          const pageIndex =
+            itemIndex < 0 || itemIndex >= itemCount
+              ? -1
+              : Math.floor(itemIndex / itemsPerPage)
+
+          assert.strictEqual(
+            helper.pageIndex(itemIndex),
+            pageIndex,
+            "pageIndex",
+          )
+        }
+      })
+    }
+  })
+})
